@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 	"sync"
 	"time"
@@ -35,11 +36,16 @@ func main() {
 	var wg sync.WaitGroup
 	duration := 10 * time.Second // Test duration
 
-	for {
+	fmt.Println("Starting CPU and memory work")
+
+	for i := 0; i < 105; i++ { // Run the test 5 times
+		fmt.Printf("Iteration %d: Starting CPU and memory work\n", i+1)
 		wg.Add(2)
 		go cpuWork(&wg, duration)
 		go memoryWork(&wg, duration)
 
 		wg.Wait()
+		fmt.Printf("Iteration %d: Completed CPU and memory work\n", i+1)
 	}
+	fmt.Println("All iterations completed")
 }
