@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"runtime"
+	"math"
 	"sync"
 	"time"
 )
@@ -10,16 +10,26 @@ import (
 func cpuWork(wg *sync.WaitGroup, duration time.Duration) {
 	defer wg.Done()
 	start := time.Now()
-	end := start.Add(duration / 2) // Reduce CPU work duration
+	end := start.Add(duration)
+
+	// Target CPU usage of 30-50%
 	for time.Now().Before(end) {
-		// Simulate CPU work
-		_ = 1 + 1 // Simple operation to keep CPU busy
+		// Work for ~40% of the time
+		workEnd := time.Now().Add(40 * time.Millisecond)
+		for time.Now().Before(workEnd) {
+			// Perform some calculations to use CPU
+			for i := 0; i < 1000; i++ {
+				_ = math.Sqrt(float64(i))
+			}
+		}
+		// Sleep for ~60% of the time
+		time.Sleep(60 * time.Millisecond)
 	}
 }
 
 func memoryWork(wg *sync.WaitGroup, duration time.Duration) {
 	defer wg.Done()
-	mem := make([]byte, 4*1024*1024*1024) // Allocate 4 GB of memory
+	mem := make([]byte, 1*1024*1024*1024) // Allocate 4 GB of memory
 	start := time.Now()
 	end := start.Add(duration)
 	for time.Now().Before(end) {
@@ -32,7 +42,6 @@ func memoryWork(wg *sync.WaitGroup, duration time.Duration) {
 }
 
 func main() {
-	runtime.GOMAXPROCS(1) // Use 1 CPU core
 	var wg sync.WaitGroup
 	duration := 10 * time.Second // Test duration
 
