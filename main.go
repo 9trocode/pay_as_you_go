@@ -35,9 +35,11 @@ func main() {
 	var wg sync.WaitGroup
 	duration := 10 * time.Second // Test duration
 
-	wg.Add(2)
-	go cpuWork(&wg, duration)
-	go memoryWork(&wg, duration)
+	for {
+		wg.Add(2)
+		go cpuWork(&wg, duration)
+		go memoryWork(&wg, duration)
 
-	wg.Wait()
+		wg.Wait()
+	}
 }
