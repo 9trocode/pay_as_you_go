@@ -44,11 +44,11 @@ func memoryWork(wg *sync.WaitGroup, duration time.Duration) {
 
 func main() {
 	var wg sync.WaitGroup
-	duration := 2 * time.Second // Test duration
+	duration := 3 * time.Second // Test duration
 
 	fmt.Println("Starting CPU and memory work")
 
-	for i := 0; i < 5; i++ { // Run the test 5 times
+	for i := 0; i < 3; i++ { // Run the test 5 times
 		fmt.Printf("Iteration %d: Starting CPU and memory work\n", i+1)
 		wg.Add(2)
 		go cpuWork(&wg, duration)
