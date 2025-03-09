@@ -3,19 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
-	"log/syslog"
 	"math/rand"
 	"runtime"
 	"time"
 )
 
 func main() {
-	// Set up syslog logging
-	sysLogger, err := syslog.New(syslog.LOG_INFO, "constant_load")
-	if err != nil {
-		log.Fatalf("Failed to set up syslog: %v", err)
-	}
-	log.SetOutput(sysLogger)
+	// Set up logging
 	log.Println("Starting constant load program")
 
 	// Allocate memory to reach 512 MiB
