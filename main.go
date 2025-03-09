@@ -30,7 +30,7 @@ func cpuWork(wg *sync.WaitGroup, duration time.Duration) {
 func memoryWork(wg *sync.WaitGroup, duration time.Duration) {
 	defer wg.Done()
 	// Allocate 900 MB of memory
-	mem := make([]byte, 900*1024*1024)
+	mem := make([]byte, 500*1024*1024)
 	start := time.Now()
 	end := start.Add(duration)
 	for time.Now().Before(end) {
