@@ -2,60 +2,35 @@ package main
 
 import (
 	"fmt"
-	"math"
-	"sync"
+	"math/rand"
+	"runtime"
 	"time"
 )
 
-func cpuWork(wg *sync.WaitGroup, duration time.Duration) {
-	defer wg.Done()
-	start := time.Now()
-	end := start.Add(duration)
+func main() {
+	// Allocate memory to reach 512 MiB
+	mem := make([]byte, 512*1024*1024)
+	for i := range mem {
+		mem[i] = byte(rand.Intn(256))
+	}
 
-	// Target CPU usage of 50%
-	for time.Now().Before(end) {
-		// Work for 50% of the time
-		workEnd := time.Now().Add(50 * time.Millisecond)
-		for time.Now().Before(workEnd) {
-			// Perform some calculations to use CPU
-			for i := 0; i < 1000; i++ {
-				_ = math.Sqrt(float64(i))
+	// Display memory usage
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+	fmt.Printf("Allocated memory: %d MiB\n", memStats.Alloc/(1024*1024))
+
+	// Create load to use around 0.3 CPU
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			start := time.Now()
+			// Perform computations for ~30ms to use ~30% CPU
+			for time.Since(start) < 30*time.Millisecond {
+				_ = rand.Float64() * rand.Float64() // Simple computation
 			}
 		}
-		// Sleep for 50% of the time to achieve constant 0.5 CPU usage
-		time.Sleep(50 * time.Millisecond)
 	}
-}
-
-func memoryWork(wg *sync.WaitGroup, duration time.Duration) {
-	defer wg.Done()
-	start := time.Now()
-	end := start.Add(duration)
-	for time.Now().Before(end) {
-		// Allocate 500 MB of memory
-		mem := make([]byte, 500*1024*1024)
-		// Simulate memory work by touching the memory
-		for i := 0; i < len(mem); i += 4096 {
-			mem[i] = 0
-		}
-		time.Sleep(10 * time.Millisecond)
-	}
-}
-
-func main() {
-	var wg sync.WaitGroup
-	duration := 3 * time.Second // Test duration
-
-	fmt.Println("Starting CPU and memory work")
-
-	for i := 0; i < 3; i++ { // Run the test 3 times
-		fmt.Printf("Iteration %d: Starting CPU and memory work\n", i+1)
-		wg.Add(2)
-		go cpuWork(&wg, duration)
-		go memoryWork(&wg, duration)
-
-		wg.Wait()
-		fmt.Printf("Iteration %d: Completed CPU and memory work\n", i+1)
-	}
-	fmt.Println("All iterations completed")
 }
