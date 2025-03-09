@@ -12,24 +12,25 @@ func cpuWork(wg *sync.WaitGroup, duration time.Duration) {
 	start := time.Now()
 	end := start.Add(duration)
 
-	// Target CPU usage of 30-50%
+	// Target CPU usage of 50%
 	for time.Now().Before(end) {
-		// Work for ~40% of the time
-		workEnd := time.Now().Add(40 * time.Millisecond)
+		// Work for 50% of the time
+		workEnd := time.Now().Add(50 * time.Millisecond)
 		for time.Now().Before(workEnd) {
 			// Perform some calculations to use CPU
 			for i := 0; i < 1000; i++ {
 				_ = math.Sqrt(float64(i))
 			}
 		}
-		// Sleep for ~60% of the time
-		time.Sleep(60 * time.Millisecond)
+		// Sleep for 50% of the time to achieve constant 0.5 CPU usage
+		time.Sleep(50 * time.Millisecond)
 	}
 }
 
 func memoryWork(wg *sync.WaitGroup, duration time.Duration) {
 	defer wg.Done()
-	mem := make([]byte, 1*1024*1024*1024) // Allocate 4 GB of memory
+	// Allocate 900 MB of memory
+	mem := make([]byte, 900*1024*1024)
 	start := time.Now()
 	end := start.Add(duration)
 	for time.Now().Before(end) {
